@@ -7,4 +7,4 @@ Run the decoder script with `python3 decoder.py input.html output.html`
 ## Webpages  
 The example webpages are `example.html` a simple "Hello World" webpage to test basic functionality. `exampleCoffeeHouse.html` is slightly more complex, included is an image (mime type base64) and some URLs that can be extracted in CyberChef.  
 
-N.B. The code was generated with the help of OpenAI's CharGPT  
+N.B. The code was generated with the help of OpenAI's ChatGPT  
