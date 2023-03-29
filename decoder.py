@@ -2,6 +2,8 @@ import argparse
 import base64
 import re
 from html.parser import HTMLParser
+import json
+
 
 def read_file(input_file, mode='rb', encoding=None):
     with open(input_file, mode, encoding=encoding) as f:
@@ -24,6 +26,7 @@ def parse_decoding_arguments():
     parser = argparse.ArgumentParser(description='Decode input HTML file and create a new file with decoded content')
     parser.add_argument('input_html_file', type=str, help='Input HTML file')
     parser.add_argument('output_file', type=str, help='Output file')
+    parser.add_argument('--cyberchef', action='store_true', help='Save CyberChef output to a file')
     return parser.parse_args()
 
 def decode_base64(encoded_content):
@@ -39,8 +42,35 @@ def extract_script_content(input_html_file):
     parser.feed(html_content)
     return parser.script_data
 
+def create_cyberchef_ops_json(encoding_steps):
+    cyberchef_ops = []
+    find_replace_op = {
+        "op": "Find / Replace",
+        "args": [
+            {"option": "Regex", "string": "^<.*\\(\"|\"\\).*>$"},
+            "",
+            True,
+            False,
+            True,
+            False,
+        ],
+    }
+
+    for step in encoding_steps:
+        cyberchef_ops.append(find_replace_op)
+        if step == "base64":
+            cyberchef_ops.append({"op": "From Base64", "args": ["A-Za-z0-9+/="]})
+        elif step == "unicode":
+            cyberchef_ops.append({ "op": "Unescape Unicode Characters","args": ["\\u"] })
+
+    return json.dumps(cyberchef_ops, indent=2)
+
 def decode_random_encoding(script_content):
     decoded_content = script_content
+    base64_counter = 0
+    unicode_counter = 0
+    encoding_steps = []
+
     while "atob(" in decoded_content or "unescape(" in decoded_content:
         if "atob(" in decoded_content:
             b64_match = re.search(r'atob\("(.+?)"\)', decoded_content)
@@ -48,18 +78,34 @@ def decode_random_encoding(script_content):
                 b64_encoded = b64_match.group(1)
                 decoded_bytes = decode_base64(b64_encoded)
                 decoded_content = decoded_bytes.decode('utf-8')
+                base64_counter += 1
+                encoding_steps.append("base64")
         else:
             unicode_match = re.search(r'unescape\("(.+?)"\)', decoded_content)
             if unicode_match:
                 unicode_encoded = unicode_match.group(1)
                 decoded_content = decode_unicode(unicode_encoded)
-    return decoded_content
+                unicode_counter += 1
+                encoding_steps.append("unicode")
 
+    print("Base64 decoding count:", base64_counter)
+    print("Unicode decoding count:", unicode_counter)
+    cyberchef_ops_json = create_cyberchef_ops_json(encoding_steps)
+    #print("\nCyberChef decoding ops (JSON):\n", cyberchef_ops_json)
+    print("Decoding flow:", " -> ".join(encoding_steps) + " -> original")
+    
+    return decoded_content, encoding_steps
 
 def decode_main(args):
     script_content = extract_script_content(args.input_html_file)
-    decoded_content = decode_random_encoding(script_content)
+    decoded_content, encoding_steps = decode_random_encoding(script_content)
     write_file(args.output_file, decoded_content, mode='w', encoding='utf-8')
+
+    if args.cyberchef:
+        cyberchef_ops_json = create_cyberchef_ops_json(encoding_steps)
+        cyberchef_output_file = args.output_file + "_cyberchef.json"
+        write_file(cyberchef_output_file, cyberchef_ops_json, mode='w', encoding='utf-8')
+        print(f"\nCyberChef JSON saved to: {cyberchef_output_file}")
 
 if __name__ == '__main__':
     decode_main(parse_decoding_arguments())
