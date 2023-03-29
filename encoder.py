@@ -33,7 +33,7 @@ def base64_wrap_in_html(encoded_content):
 
 def random_encoding(content):
     html_content = content.decode('utf-8')
-    encoding_steps = random.randint(1, 5)
+    encoding_steps = random.randint(1, 10)
 
     for _ in range(encoding_steps):
         encoding_type = random.choice(['base64', 'unicode'])
