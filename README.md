@@ -6,3 +6,5 @@ The `random` flag will run both encoding methods a random number between one and
 Run the decoder script with `python3 decoder.py output.html` Note only works with base64 for now.  
 ## Webpages  
 The example webpages are `example.html` a simple "Hello World" webpage to test basic functionality. `exampleCoffeeHouse.html` is slightly more complex, included is an image (mime type base64) and some URLs that can be extracted in CyberChef.  
+
+N.B. The code was generated with the help of OpenAI's CharGPT  
