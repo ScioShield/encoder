@@ -8,4 +8,10 @@ Run the decoder script with `python3 decoder.py input.html output.html`
 ## Webpages  
 The example webpages are `example.html` a simple "Hello World" webpage to test basic functionality. `exampleCoffeeHouse.html` is slightly more complex, included is an image (mime type base64) and some URLs that can be extracted in CyberChef.  
 
+# Improvements
+Think of how to get encoded data by reference.  
+Think about adding a filesize check function that it will measure the projected output filesize and if above a threshold prompt the user if they are ok. This will necessitate a rework of the current encoding methods.  
+Think about multithreading.  
+Add a method to enc/dec "encodeURIComponent".  
+
 N.B. The code was generated with the help of OpenAI's ChatGPT  
