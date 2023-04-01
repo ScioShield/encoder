@@ -3,7 +3,15 @@ import base64
 import re
 from html.parser import HTMLParser
 import json
+import gzip
+import io
 
+def decode_and_unzip_base64(encoded_content):
+    decoded_content = base64.b64decode(encoded_content)
+    buffer = io.BytesIO(decoded_content)
+    with gzip.open(buffer, 'rb') as f:
+        unzipped_content = f.read()
+    return unzipped_content.decode('utf-8')
 
 def read_file(input_file, mode='rb', encoding=None):
     with open(input_file, mode, encoding=encoding) as f:
@@ -61,7 +69,14 @@ def create_cyberchef_ops_json(encoding_steps):
         if step == "base64":
             cyberchef_ops.append({"op": "From Base64", "args": ["A-Za-z0-9+/="]})
         elif step == "unicode":
-            cyberchef_ops.append({ "op": "Unescape Unicode Characters","args": ["\\u"] })
+            cyberchef_ops.append({ "op": "Unescape Unicode Characters", "args": ["\\u"] })
+        elif step == "gzip":
+            gzip_recipe = [
+                {"op": "Regular expression", "args": ["User defined", "data:application/octet-stream;base64,([^']+?(?![^;]+';))", True, True, False, False, False, False, "List capture groups"]},
+                {"op": "From Base64", "args": ["A-Za-z0-9+/=", True, False]},
+                {"op": "Gunzip", "args": []}
+            ]
+            cyberchef_ops.extend(gzip_recipe)
 
     return json.dumps(cyberchef_ops, indent=2)
 
@@ -69,31 +84,49 @@ def decode_random_encoding(script_content):
     decoded_content = script_content
     base64_counter = 0
     unicode_counter = 0
+    gzip_counter = 0
     encoding_steps = []
 
-    while "atob(" in decoded_content or "unescape(" in decoded_content:
+    while True:
+        updated = False
         if "atob(" in decoded_content:
             b64_match = re.search(r'atob\("(.+?)"\)', decoded_content)
             if b64_match:
                 b64_encoded = b64_match.group(1)
                 decoded_bytes = decode_base64(b64_encoded)
-                decoded_content = decoded_bytes.decode('utf-8')
+                decoded_str = decoded_bytes.decode('utf-8')
+                decoded_content = decoded_content.replace(b64_match.group(0), decoded_str)
                 base64_counter += 1
                 encoding_steps.append("base64")
-        else:
+                updated = True
+        if "unescape(" in decoded_content:
             unicode_match = re.search(r'unescape\("(.+?)"\)', decoded_content)
             if unicode_match:
                 unicode_encoded = unicode_match.group(1)
-                decoded_content = decode_unicode(unicode_encoded)
+                decoded_str = decode_unicode(unicode_encoded)
+                decoded_content = decoded_content.replace(unicode_match.group(0), decoded_str)
                 unicode_counter += 1
                 encoding_steps.append("unicode")
+                updated = True
+        if "data:application/octet-stream;base64," in decoded_content:
+            gzip_match = re.search(r'data:application/octet-stream;base64,(.+)', decoded_content)
+            if gzip_match:
+                gzip_encoded = gzip_match.group(1)
+                decoded_str = decode_and_unzip_base64(gzip_encoded)
+                decoded_content = decoded_content.replace(gzip_match.group(0), decoded_str)
+                gzip_counter += 1
+                encoding_steps.append("gzip")
+                updated = True
+
+        if not updated:
+            break
 
     print("Base64 decoding count:", base64_counter)
     print("Unicode decoding count:", unicode_counter)
+    print("Gzip decoding count:", gzip_counter)
     cyberchef_ops_json = create_cyberchef_ops_json(encoding_steps)
-    #print("\nCyberChef decoding ops (JSON):\n", cyberchef_ops_json)
     print("Decoding flow:", " -> ".join(encoding_steps) + " -> original")
-    
+
     return decoded_content, encoding_steps
 
 def decode_main(args):
