@@ -13,8 +13,7 @@ The example webpages are `example.html` a simple "Hello World" webpage to test b
 # Improvements
 ## Encoder
 Add a method to enc "encodeURIComponent".  
-## Decoder
-Add a method to decode the gzipped output.  
+## Decoder 
 Think of how to get encoded data by reference.  
 
 N.B. The code was generated with the help of OpenAI's ChatGPT  
