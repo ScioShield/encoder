@@ -12,6 +12,6 @@ The example webpages are `example.html` a simple "Hello World" webpage to test b
 Think of how to get encoded data by reference.  
 Think about adding a filesize check function that it will measure the projected output filesize and if above a threshold prompt the user if they are ok. This will necessitate a rework of the current encoding methods.   
 Add a method to enc/dec "encodeURIComponent".  
-Add the option to compress the output file with zgip and decompress with pako.  
+Add the option to compress the output file with gzip and decompress with pako.  
 
 N.B. The code was generated with the help of OpenAI's ChatGPT  
