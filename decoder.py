@@ -123,7 +123,7 @@ def decode_random_encoding(script_content):
 
     print("Base64 decoding count:", base64_counter)
     print("Unicode decoding count:", unicode_counter)
-    print("Gzip decoding count:", gzip_counter)
+    print("Gzip decompressing count:", gzip_counter)
     cyberchef_ops_json = create_cyberchef_ops_json(encoding_steps)
     print("Decoding flow:", " -> ".join(encoding_steps) + " -> original")
 
