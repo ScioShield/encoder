@@ -72,7 +72,7 @@ def create_cyberchef_ops_json(encoding_steps):
             cyberchef_ops.append({ "op": "Unescape Unicode Characters", "args": ["\\u"] })
         elif step == "gzip":
             gzip_recipe = [
-                {"op": "Regular expression", "args": ["User defined", "data:application/octet-stream;base64,([^']+?(?![^;]+';))", True, True, False, False, False, False, "List capture groups"]},
+                {"op": "Regular expression", "args": ["User defined", "data:application/octet-stream;base64,([^;']+)", True, True, False, False, False, False, "List capture groups"]},
                 {"op": "From Base64", "args": ["A-Za-z0-9+/=", True, False]},
                 {"op": "Gunzip", "args": []}
             ]
