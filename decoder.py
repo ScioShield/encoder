@@ -90,9 +90,9 @@ def decode_random_encoding(script_content):
     while True:
         updated = False
         if "atob(" in decoded_content:
-            b64_match = re.search(r'atob\("(.+?)"\)', decoded_content)
+            b64_match = re.search(r'atob\((["\'])(.+?)\1\)', decoded_content)
             if b64_match:
-                b64_encoded = b64_match.group(1)
+                b64_encoded = b64_match.group(2)
                 decoded_bytes = decode_base64(b64_encoded)
                 decoded_str = decoded_bytes.decode('utf-8')
                 decoded_content = decoded_content.replace(b64_match.group(0), decoded_str)
@@ -100,9 +100,9 @@ def decode_random_encoding(script_content):
                 encoding_steps.append("base64")
                 updated = True
         if "unescape(" in decoded_content:
-            unicode_match = re.search(r'unescape\("(.+?)"\)', decoded_content)
+            unicode_match = re.search(r'unescape\((["\'])(.+?)\1\)', decoded_content)
             if unicode_match:
-                unicode_encoded = unicode_match.group(1)
+                unicode_encoded = unicode_match.group(2)
                 decoded_str = decode_unicode(unicode_encoded)
                 decoded_content = decoded_content.replace(unicode_match.group(0), decoded_str)
                 unicode_counter += 1
@@ -117,6 +117,9 @@ def decode_random_encoding(script_content):
                 gzip_counter += 1
                 encoding_steps.append("gzip")
                 updated = True
+        inner_html_match = re.search(r'<html><head><script>document\.write\((.+)\)<\/script><\/head><\/html>', decoded_content)
+        if inner_html_match:
+            decoded_content = inner_html_match.group(1)
 
         if not updated:
             break
