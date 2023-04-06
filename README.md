@@ -15,5 +15,7 @@ The example webpages are `example.html` a simple "Hello World" webpage to test b
 Add a method to enc "encodeURIComponent".  
 ## Decoder 
 Think of how to get encoded data by reference.  
+Think of how to integrate the current Python code logic into CyberChef to reduce context/tool switches. The initial scan of the file for known obs methods like unescape() and atob() and then be done all in one tool.  
+Think about integrating the existing JS-Deobfuscator into CyberChef as a new op.  
 
 N.B. The code was generated with the help of OpenAI's ChatGPT  
