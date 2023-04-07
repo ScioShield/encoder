@@ -22,7 +22,7 @@ pip3 install urllib
 You can run the encoder script with the following command: 
 
 ```sh
-python3 encoder.py {random,base64,uri or unicode} \[--gzip\] input.html output.html  
+python3 encoder.py {random,base64,uri or unicode} [--gzip] input.html output.html  
 ```
 
 If you use the `random` flag, the script will execute all encoding methods a random number of times between one and ten. The `encoding_steps` should not go above 10, as large files can be generated based on input size. Each method produces a different filesize increase factor, as shown in the table below:  
