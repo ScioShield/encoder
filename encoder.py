@@ -3,7 +3,6 @@ import base64
 import random
 import gzip
 from urllib.parse import quote
-import string
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Encode input file with the specified encoding and create a new HTML file with encoded content')
@@ -22,12 +21,12 @@ def write_file(output_file, content, mode='w', encoding=None):
     with open(output_file, mode, encoding=encoding) as f:
         f.write(content)
 
-def encode_base64(content):
-    return base64.b64encode(content).decode('utf-8')
-
 def gzip_content(content):
     compressed = gzip.compress(content)
     return compressed
+
+def encode_base64(content):
+    return base64.b64encode(content).decode('utf-8')
 
 def encode_unicode(content):
     return ''.join([f'\\u{ord(c):04x}' for c in content])
@@ -38,12 +37,14 @@ def encode_uri_chars(content):
 def encode_uri_all_chars(content):
     return ''.join(f'%{ord(char):02X}' for char in content)
 
-
-def unescape_wrap_in_html(encoded_content):
+def unicode_wrap_in_html(encoded_content):
     return f'<html><head><script>document.write(unescape("{encoded_content}"))</script></head></html>'
 
 def base64_wrap_in_html(encoded_content):
     return f'<html><head><script>document.write(atob("{encoded_content}"))</script></head></html>'
+
+def uri_wrap_in_html(encoded_content):
+    return f'<html><head><script>document.write(unescape("{encoded_content}"))</script></head></html>'
 
 def gzip_wrap_in_html(encoded_content):
     return f'''
@@ -82,23 +83,37 @@ def gzip_wrap_in_html(encoded_content):
 def random_encoding(content):
     html_content = content.decode('utf-8')
     encoding_steps = random.randint(1, 10)
+    previous_encoding_type = None
 
-    for _ in range(encoding_steps):
-        encoding_type = random.choice(['base64','unicode','uri'])
+    for step in range(encoding_steps):
+        available_encodings = ['unicode', 'base64']
+
+        # Add 'uri' encoding to the list of available encodings only in the last step
+        if step == encoding_steps - 1:
+            available_encodings.append('uri')
+
+        # Remove the previous encoding type from the list of available encodings to prevent consecutive repeats
+        if previous_encoding_type is not None:
+            available_encodings.remove(previous_encoding_type)
+
+        encoding_type = random.choice(available_encodings)
+        previous_encoding_type = encoding_type
+
         if encoding_type == 'base64':
             content = encode_base64(content)
             html_content = base64_wrap_in_html(content)
             content = html_content.encode('utf-8')
         elif encoding_type == 'unicode':
             content = encode_unicode(html_content)
-            html_content = unescape_wrap_in_html(content)
+            html_content = unicode_wrap_in_html(content)
             content = html_content.encode('utf-8')
-        else:
+        elif encoding_type == 'uri':
             content = encode_uri_all_chars(html_content)
-            html_content = unescape_wrap_in_html(content)
-            content = html_content.encode('utf-8')
+            html_content = uri_wrap_in_html(content)
+            content = html_content
 
     return html_content
+
 
 def main(args):
     content = read_file(args.input_file)
@@ -109,11 +124,11 @@ def main(args):
     elif args.encoding_type == 'unicode':
         html_content = content.decode('utf-8')
         encoded_content = encode_unicode(html_content)
-        html_output = unescape_wrap_in_html(encoded_content)
+        html_output = unicode_wrap_in_html(encoded_content)
     elif args.encoding_type == 'uri':
         html_content = content.decode('utf-8')
         encoded_content = encode_uri_all_chars(html_content)
-        html_output = unescape_wrap_in_html(encoded_content)
+        html_output = uri_wrap_in_html(encoded_content)
     elif args.encoding_type == 'random':
         html_output = random_encoding(content)
     else:
