@@ -5,6 +5,7 @@ from html.parser import HTMLParser
 import json
 import gzip
 import io
+from urllib.parse import unquote
 
 def decode_and_unzip_base64(encoded_content):
     decoded_content = base64.b64decode(encoded_content)
@@ -84,6 +85,7 @@ def decode_random_encoding(script_content):
     decoded_content = script_content
     base64_counter = 0
     unicode_counter = 0
+    uri_counter = 0
     gzip_counter = 0
     encoding_steps = []
 
@@ -105,10 +107,21 @@ def decode_random_encoding(script_content):
             if unicode_match:
                 unicode_encoded = unicode_match.group(2)
                 decoded_str = decode_unicode(unicode_encoded)
-                decoded_content = decoded_content.replace(unicode_match.group(0), decoded_str)
-                unicode_counter += 1
-                encoding_steps.append("unicode")
-                updated = True
+                if decoded_str != unicode_encoded:  # Check if Unicode decoding was successful
+                    decoded_content = decoded_content.replace(unicode_match.group(0), decoded_str)
+                    unicode_counter += 1
+                    encoding_steps.append("unicode")
+                    updated = True
+                else:  # If Unicode decoding failed, try URI decoding
+                    try:
+                        decoded_uri_str = unquote(unicode_encoded)
+                        if decoded_uri_str != unicode_encoded:
+                            decoded_content = decoded_content.replace(unicode_match.group(0), decoded_uri_str)
+                            uri_counter += 1
+                            encoding_steps.append("URI")
+                            updated = True
+                    except Exception as e:
+                        print(f"Error decoding URI: {e}")
         if "data:application/octet-stream;base64," in decoded_content:
             gzip_match = re.search(r'data:application/octet-stream;base64,(.+)', decoded_content)
             if gzip_match:
@@ -123,6 +136,7 @@ def decode_random_encoding(script_content):
 
     print("Base64 decoding count:", base64_counter)
     print("Unicode decoding count:", unicode_counter)
+    print("URI decoding count:", uri_counter)
     print("Gzip decompressing count:", gzip_counter)
     cyberchef_ops_json = create_cyberchef_ops_json(encoding_steps)
     print("Decoding flow:", " -> ".join(encoding_steps) + " -> original")
