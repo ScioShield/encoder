@@ -94,7 +94,7 @@ def decode_random_encoding(script_content):
     while True:
         updated = False
         if "atob(" in decoded_content:
-            b64_match = re.search(r'atob\((["\'])(.+?)\1\)', decoded_content)
+            b64_match = re.search(r'atob\(\s*(["\'])(.+?)\1\s*\)', decoded_content)
             if b64_match:
                 b64_encoded = b64_match.group(2)
                 decoded_bytes = decode_base64(b64_encoded)
@@ -104,7 +104,7 @@ def decode_random_encoding(script_content):
                 encoding_steps.append("base64")
                 updated = True
         if "unescape(" in decoded_content:
-            unicode_match = re.search(r'unescape\((["\'])(.+?)\1\)', decoded_content)
+            unicode_match = re.search(r'unescape\(\s*(["\'])(.+?)\1\s*\)', decoded_content)
             if unicode_match:
                 unicode_encoded = unicode_match.group(2)
                 decoded_str = decode_unicode(unicode_encoded)
