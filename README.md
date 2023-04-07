@@ -1,7 +1,7 @@
 # Instructions  
 ## Encoder  
-Run the encoder script with `python3 encoder.py {random,base64 or unicode} input.html output.html`  
-The `random` flag will run both encoding methods a random number between one and ten times. It could be just one iteration of base64 or it can be three iterations of unicode followed by a base64, etc.  
+Run the encoder script with `python3 encoder.py {random,base64,uri or unicode} input.html output.html`  
+The `random` flag will run all encoding methods a random number between one and ten times. It could be just one iteration of base64 or it can be three iterations of unicode followed by a base64, etc.  
 Do not change the `encoding_steps` to anything above 10. At 10 random iterations there is a  1 in 10,240 chance with the exampleCoffeeHouse.html file of ~7KB to output a file of ~41 GB. Each encoding step increases the filesize by a given amount. ~1.34 times with base64 and ~6 times with Unicode.  
 Use `--gzip` to compress the output file and insert it into a webpage that will self extract with pako (imported at runtime from Cloudflare CDN).  
 ## Decoder  
@@ -12,10 +12,8 @@ The example webpages are `example.html` a simple "Hello World" webpage to test b
 
 # Improvements
 ## Encoder
-Add a method to enc "encodeURIComponent".  
+
 ## Decoder 
-Think of how to get encoded data by reference.  
-Think of how to integrate the current Python code logic into CyberChef to reduce context/tool switches. The initial scan of the file for known obs methods like unescape() and atob() and then be done all in one tool.  
-Think about integrating the existing JS-Deobfuscator into CyberChef as a new op.  
+Think of how to get encoded data by reference.   
 
 N.B. The code was generated with the help of OpenAI's ChatGPT  
