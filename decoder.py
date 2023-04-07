@@ -71,6 +71,8 @@ def create_cyberchef_ops_json(encoding_steps):
             cyberchef_ops.append({"op": "From Base64", "args": ["A-Za-z0-9+/="]})
         elif step == "unicode":
             cyberchef_ops.append({ "op": "Unescape Unicode Characters", "args": ["\\u"] })
+        elif step == "uri":
+            cyberchef_ops.append({"op":"URL Decode","args":[]})
         elif step == "gzip":
             gzip_recipe = [
                 {"op": "Regular expression", "args": ["User defined", "data:application/octet-stream;base64,([^;']+)", True, True, False, False, False, False, "List capture groups"]},
@@ -118,7 +120,7 @@ def decode_random_encoding(script_content):
                         if decoded_uri_str != unicode_encoded:
                             decoded_content = decoded_content.replace(unicode_match.group(0), decoded_uri_str)
                             uri_counter += 1
-                            encoding_steps.append("URI")
+                            encoding_steps.append("uri")
                             updated = True
                     except Exception as e:
                         print(f"Error decoding URI: {e}")
