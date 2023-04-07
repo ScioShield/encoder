@@ -14,7 +14,9 @@ Use `--gzip` to compress the output file and insert it into a webpage that will 
 Run the decoder script with `python3 decoder.py input.html output.html`  
 Use `--cyberchef` to output the corresponding CyberChef recipe to a JSON file for easy import.  
 ## Webpages  
-The example webpages are `example.html` a simple "Hello World" webpage to test basic functionality. `exampleCoffeeHouse.html` is slightly more complex, included is an image (mime type base64) and some URLs that can be extracted in CyberChef.  
+`example.html` a simple "Hello World" webpage to test basic functionality.  
+`exampleCoffeeHouse.html` is slightly more complex, included is an image (mime type base64) and some URLs that can be extracted in CyberChef.  
+`calc.html` is a simple JS calculator, the code has been put through and online obfuscator however the original is still contained within.  
 
 # Improvements
 ## Encoder
