@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      background-color: #f0f0f0;
+    }
+
+    .calculator {
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 20px;
+      background-color: #fff;
+    }
+
+    input, button {
+      font-size: 18px;
+      padding: 5px 10px;
+      margin: 5px;
+    }
+
+    .row {
+      display: flex;
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <input type="text" id="display" readonly>
+    <div class="row">
+      <button onclick="appendNumber(7)">7</button>
+      <button onclick="appendNumber(8)">8</button>
+      <button onclick="appendNumber(9)">9</button>
+      <button onclick="appendOperator('+')">+</button>
+    </div>
+    <div class="row">
+      <button onclick="appendNumber(4)">4</button>
+      <button onclick="appendNumber(5)">5</button>
+      <button onclick="appendNumber(6)">6</button>
+      <button onclick="appendOperator('-')">-</button>
+    </div>
+    <div class="row">
+      <button onclick="appendNumber(1)">1</button>
+      <button onclick="appendNumber(2)">2</button>
+      <button onclick="appendNumber(3)">3</button>
+      <button onclick="appendOperator('*')">*</button>
+    </div>
+    <div class="row">
+      <button onclick="clearDisplay()">C</button>
+      <button onclick="appendNumber(0)">0</button>
+      <button onclick="calculateResult()">=</button>
+      <button onclick="appendOperator('/')">/</button>
+    </div>
+  </div>
+
+  <script>
+    <!-- Original JS
+        const display = document.getElementById('display');
+
+    function appendNumber(number) {
+      display.value += number;
+    }
+
+    function appendOperator(operator) {
+      display.value += operator;
+    }
+
+    function clearDisplay() {
+      display.value = '';
+    }
+
+    function calculateResult() {
+      try {
+        display.value = eval(display.value);
+      } catch (error) {
+        display.value = 'Error';
+      }
+    }
+    -->
+    <!--Encoded JS-->
+    const _0x4e03f1 = (function () {
+        let _0x1f5cd0 = !![];
+        return function (_0x30c5bf, _0x1b9254) {
+            const _0x4e73aa = _0x1f5cd0 ? function () {
+                if (_0x1b9254) {
+                    const _0x10465f = _0x1b9254['apply'](_0x30c5bf, arguments);
+                    return _0x1b9254 = null, _0x10465f;
+                }
+            } : function () {
+            };
+            return _0x1f5cd0 = ![], _0x4e73aa;
+        };
+    }()), _0x578fca = _0x4e03f1(this, function () {
+        let _0x53c32f;
+        try {
+            const _0x16c40c = Function('return\x20(fu' + 'nction()\x20' + ('{}.constru' + 'ctor(\x22retu' + 'rn\x20this\x22)(' + '\x20)') + ');');
+            _0x53c32f = _0x16c40c();
+        } catch (_0x41b3ce) {
+            _0x53c32f = window;
+        }
+        const _0xb1b4d7 = _0x53c32f['console'] = _0x53c32f['console'] || {}, _0x5c4cb6 = [
+                'log',
+                'warn',
+                'info',
+                'error',
+                'exception',
+                'table',
+                'trace'
+            ];
+        for (let _0x40c2c0 = 0x0; _0x40c2c0 < _0x5c4cb6['length']; _0x40c2c0++) {
+            const _0x20fd66 = _0x4e03f1['constructo' + 'r']['prototype']['bind'](_0x4e03f1), _0x16de19 = _0x5c4cb6[_0x40c2c0], _0x43557b = _0xb1b4d7[_0x16de19] || _0x20fd66;
+            _0x20fd66['__proto__'] = _0x4e03f1['bind'](_0x4e03f1), _0x20fd66['toString'] = _0x43557b['toString']['bind'](_0x43557b), _0xb1b4d7[_0x16de19] = _0x20fd66;
+        }
+        });
+    _0x578fca();
+const display = document['getElement' + 'ById']('display');
+function appendNumber(_0x24d389) {
+    display['value'] += _0x24d389;
+}
+function appendOperator(_0x2f27e7) {
+    display['value'] += _0x2f27e7;
+}
+function clearDisplay() {
+    display['value'] = '';
+}
+function calculateResult() {
+    try {
+        display['value'] = eval(display['value']);
+    } catch (_0x2e6697) {
+        display['value'] = 'Error';
+    }
+}
+  </script>
+</body>
+</html>
