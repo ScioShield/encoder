@@ -93,7 +93,6 @@ def decode_random_encoding(script_content):
 
     while True:
         updated = False
-        inner_html_match = re.search(r'<html><head><script>document\.write\((.+)\)<\/script><\/head><\/html>', decoded_content)
         if "atob(" in decoded_content:
             b64_match = re.search(r'atob\((["\'])(.+?)\1\)', decoded_content)
             if b64_match:
