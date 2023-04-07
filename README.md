@@ -7,7 +7,8 @@ Do not change the `encoding_steps` to anything above 10. At 10 random iterations
 |---------------|--------------------------|
 | Unicode       | ~6                       |
 | URI           | ~3                       |
-| Base64        | ~1.34                    |
+| Base64        | ~1.34                    |  
+
 Use `--gzip` to compress the output file and insert it into a webpage that will self extract with pako (imported at runtime from Cloudflare CDN).  
 ## Decoder  
 Run the decoder script with `python3 decoder.py input.html output.html`  
