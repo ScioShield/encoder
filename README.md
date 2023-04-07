@@ -22,7 +22,7 @@ pip3 install urllib
 You can run the encoder script with the following command: 
 
 ```sh
-python3 encoder.py {random,base64,uri or unicode} input.html output.html  
+python3 encoder.py {random,base64,uri or unicode} [--gzip] input.html output.html  
 ```
 
 If you use the `random` flag, the script will execute all encoding methods a random number of times between one and ten. The `encoding_steps` should not go above 10, as large files can be generated based on input size. Each method produces a different filesize increase factor, as shown in the table below:  
@@ -53,11 +53,9 @@ Included in this project are several webpages for testing purposes:
 
 # Improvements
 ## Encoder
-Currently, URI encoding, if done first, can break how the browser renders the document. For example, if it's original -> URI -> URI, that's fine, but if it's original -> URI -> Unicode, this breaks how the browser renders the first URI encoding. A possible workaround is to have a chance of URI encoding as the final step.  
+Currently, URI encoding, if done first, can break how the browser renders the document. For example, if it's original -> URI -> URI, that's fine, but if it's original -> URI -> Unicode, this breaks how the browser renders the first URI encoding. The current workaround is to have a chance of URI encoding as the final step.  
 
 ## Decoder 
-There are different things to consider when dealing with the decoder: 
-
 - Think of how to get encoded data by reference.
 - Think of how to deal with multiple encoding methods at the end, for example, a file that has multiple atobs or unicodes at the end.
 - Consider having a step mode so the decoder will do one step at a time and show what happens at each step.
