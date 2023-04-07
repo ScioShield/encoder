@@ -22,8 +22,10 @@ Use `--cyberchef` to output the corresponding CyberChef recipe to a JSON file fo
 
 # Improvements
 ## Encoder
-
+It seems the URI encoding, if done first, breaks something in how the browser renders the document. Example if it's original -> URI -> URI this is fine but if it's original -> URI -> Unicode this breaks how the browser renders the first URI encoding. The current workaround is to have a chance of URI encoding as the final step.  
 ## Decoder 
-Think of how to get encoded data by reference.   
+Think of how to get encoded data by reference.  
+Think of how to deal with multiple encoding methods at the end, example a file that has multiple atobs or unicodes at the end.  
+Think about having a step mode so the decoder will do one step at a time and show what happens at each step.  
 
 N.B. The code was generated with the help of OpenAI's ChatGPT  
