@@ -13,11 +13,11 @@ The script requires the following Python libraries to be installed:
 The required libraries can be installed  using pip:  
 
 ```sh
-pip install argparse  
-pip install base64  
-pip install random  
-pip install gzip  
-pip install urllib  
+pip3 install argparse  
+pip3 install base64  
+pip3 install random  
+pip3 install gzip  
+pip3 install urllib  
 ```
 ## Encoder
 Run the encoder script with `python3 encoder.py {random,base64,uri or unicode} input.html output.html`  
