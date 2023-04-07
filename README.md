@@ -39,7 +39,7 @@ To compress the output file and insert it into a webpage that will self-extract 
 The decoder script can be run using the following command:
 
 ```sh 
-python3 decoder.py input.html output.html
+python3 decoder.py [--cyberchef] input.html output.html
 ```
 
 To output the corresponding CyberChef recipe to a JSON file for easy import, use the `--cyberchef` flag.
