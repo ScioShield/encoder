@@ -1,5 +1,25 @@
 # Instructions  
-## Encoder  
+## Dependencies
+The script requires Python 3+ to run.  
+
+The script requires the following Python libraries to be installed:  
+
+- `argparse`
+- `base64`
+- `random`
+- `gzip`
+- `urllib`
+
+The required libraries can be installed  using pip:  
+
+```sh
+pip install argparse  
+pip install base64  
+pip install random  
+pip install gzip  
+pip install urllib  
+```
+## Encoder
 Run the encoder script with `python3 encoder.py {random,base64,uri or unicode} input.html output.html`  
 
 The `random` flag will run all encoding methods a random number between one and ten times. It could be just one iteration of base64 or it can be three iterations of unicode followed by a base64, etc.  
