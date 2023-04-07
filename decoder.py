@@ -118,12 +118,6 @@ def decode_random_encoding(script_content):
                 gzip_counter += 1
                 encoding_steps.append("gzip")
                 updated = True
-        while True:
-            inner_html_match = re.search(r'<html><head><script>document\.write\((.+)\)<\/script><\/head><\/html>', decoded_content)
-            if inner_html_match:
-                decoded_content = decoded_content.replace(inner_html_match.group(0), inner_html_match.group(1))
-            else:
-                break
         if not updated:
             break
 
