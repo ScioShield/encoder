@@ -56,6 +56,7 @@ Included in this project are several webpages for testing purposes:
 Currently, URI encoding, if done first, can break how the browser renders the document. For example, if it's original -> URI -> URI, that's fine, but if it's original -> URI -> Unicode, this breaks how the browser renders the first URI encoding. The current workaround is to have a chance of URI encoding as the final step.  
 
 ## Decoder 
+- Add a method to search for and decode `decodeURIComponent()` or `decodeURI()`
 - Think of how to get encoded data by reference.
 - Think of how to deal with multiple encoding methods at the end, for example, a file that has multiple atobs or unicodes at the end.
 - Consider having a step mode so the decoder will do one step at a time and show what happens at each step.
