@@ -6,7 +6,7 @@ from urllib.parse import quote
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Encode input file with the specified encoding and create a new HTML file with encoded content')
-    parser.add_argument('encoding_type', choices=['base64', 'unicode', 'random'], help='Encoding type')
+    parser.add_argument('encoding_type', choices=['base64', 'unicode', 'uri', 'random'], help='Encoding type')
     parser.add_argument('input_file', type=str, help='Input file')
     parser.add_argument('output_file', type=str, help='Output file')
     parser.add_argument('--gzip', action='store_true', help='Use gzip compression before encoding')
@@ -108,6 +108,10 @@ def main(args):
         html_content = content.decode('utf-8')
         encoded_content = encode_unicode(html_content)
         html_output = unicode_wrap_in_html(encoded_content)
+    elif args.encoding_type == 'uri':
+        html_content = content.decode('utf-8')
+        encoded_content = encode_uri_chars(html_content)
+        html_output = uri_wrap_in_html(encoded_content)
     elif args.encoding_type == 'random':
         html_output = random_encoding(content)
     else:
