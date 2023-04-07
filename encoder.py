@@ -34,14 +34,11 @@ def encode_unicode(html_content):
 def encode_uri_chars(content):
     return quote(content, safe='')
 
-def unicode_wrap_in_html(encoded_content):
+def unescape_wrap_in_html(encoded_content):
     return f'<html><head><script>document.write(unescape("{encoded_content}"))</script></head></html>'
 
 def base64_wrap_in_html(encoded_content):
     return f'<html><head><script>document.write(atob("{encoded_content}"))</script></head></html>'
-
-def uri_wrap_in_html(encoded_content):
-    return f'<html><head><script>document.write(unescape("{encoded_content}"))</script></head></html>'
 
 def gzip_wrap_in_html(encoded_content):
     return f'''
@@ -89,11 +86,11 @@ def random_encoding(content):
             content = html_content.encode('utf-8')
         elif encoding_type == 'unicode':
             content = encode_unicode(html_content)
-            html_content = unicode_wrap_in_html(content)
+            html_content = unescape_wrap_in_html(content)
             content = html_content.encode('utf-8')
         else:
             content = encode_uri_chars(html_content)
-            html_content = uri_wrap_in_html(content)
+            html_content = unescape_wrap_in_html(content)
             content = html_content.encode('utf-8')
 
     return html_content
@@ -107,11 +104,11 @@ def main(args):
     elif args.encoding_type == 'unicode':
         html_content = content.decode('utf-8')
         encoded_content = encode_unicode(html_content)
-        html_output = unicode_wrap_in_html(encoded_content)
+        html_output = unescape_wrap_in_html(encoded_content)
     elif args.encoding_type == 'uri':
         html_content = content.decode('utf-8')
         encoded_content = encode_uri_chars(html_content)
-        html_output = uri_wrap_in_html(encoded_content)
+        html_output = unescape_wrap_in_html(encoded_content)
     elif args.encoding_type == 'random':
         html_output = random_encoding(content)
     else:
