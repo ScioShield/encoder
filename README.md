@@ -2,7 +2,12 @@
 ## Encoder  
 Run the encoder script with `python3 encoder.py {random,base64,uri or unicode} input.html output.html`  
 The `random` flag will run all encoding methods a random number between one and ten times. It could be just one iteration of base64 or it can be three iterations of unicode followed by a base64, etc.  
-Do not change the `encoding_steps` to anything above 10. At 10 random iterations there is a  1 in 10,240 chance with the exampleCoffeeHouse.html file of ~7KB to output a file of ~41 GB. Each encoding step increases the filesize by a given amount. ~1.34 times with base64 and ~6 times with Unicode.  
+Do not change the `encoding_steps` to anything above 10. At 10 random iterations there is a  1 in 10,240 chance with the exampleCoffeeHouse.html file of ~7KB to output a file of ~41 GB.  
+| Encoding Type | Filesize Increase Factor |
+|---------------|--------------------------|
+| Unicode       | ~6                       |
+| URI           | ~3                       |
+| Base64        | ~1.34                    |
 Use `--gzip` to compress the output file and insert it into a webpage that will self extract with pako (imported at runtime from Cloudflare CDN).  
 ## Decoder  
 Run the decoder script with `python3 decoder.py input.html output.html`  
