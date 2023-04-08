@@ -6,6 +6,8 @@ import json
 import gzip
 import io
 from urllib.parse import unquote
+import magic
+
 
 def decode_and_unzip_base64(encoded_content):
     decoded_content = base64.b64decode(encoded_content)
@@ -85,70 +87,108 @@ def create_cyberchef_ops_json(encoding_steps):
 
 def decode_random_encoding(script_content):
     decoded_content = script_content
-    base64_counter = 0
-    unicode_counter = 0
-    uri_counter = 0
-    gzip_counter = 0
+    counters = {"base64": 0, "unicode": 0, "uri": 0, "gzip": 0}
     encoding_steps = []
 
     while True:
         updated = False
-        if re.search(r'atob\s*\(\s*(["\'])(.+?)\1\s*\)', decoded_content):
-            b64_match = re.search(r'atob\s*\(\s*(["\'])(.+?)\1\s*\)', decoded_content)
-            if b64_match:
-                b64_encoded = b64_match.group(2)
-                decoded_bytes = decode_base64(b64_encoded)
-                decoded_str = decoded_bytes.decode('utf-8')
-                decoded_content = decoded_content.replace(b64_match.group(0), decoded_str)
-                base64_counter += 1
-                encoding_steps.append("base64")
+
+        # Base64 decoding
+        b64_match = re.search(r'atob\s*\(\s*(["\'])(.+?)\1\s*\)', decoded_content)
+        if b64_match:
+            decoded_str = decode_base64(b64_match.group(2)).decode('utf-8')
+            decoded_content = decoded_content.replace(b64_match.group(0), decoded_str)
+            counters["base64"] += 1
+            encoding_steps.append("base64")
+            updated = True
+
+        # Unicode and URI decoding
+        unicode_match = re.search(r'unescape\s*\(\s*(["\'])(.+?)\1\s*\)', decoded_content)
+        if unicode_match:
+            encoded_str = unicode_match.group(2)
+            decoded_str = decode_unicode(encoded_str)
+            if decoded_str != encoded_str:
+                decoded_content = decoded_content.replace(unicode_match.group(0), decoded_str)
+                counters["unicode"] += 1
+                encoding_steps.append("unicode")
                 updated = True
-        if re.search(r'unescape\s*\(\s*(["\'])(.+?)\1\s*\)', decoded_content):
-            unicode_match = re.search(r'unescape\s*\(\s*(["\'])(.+?)\1\s*\)', decoded_content)
-            if unicode_match:
-                unicode_encoded = unicode_match.group(2)
-                decoded_str = decode_unicode(unicode_encoded)
-                if decoded_str != unicode_encoded:  # Check if Unicode decoding was successful
-                    decoded_content = decoded_content.replace(unicode_match.group(0), decoded_str)
-                    unicode_counter += 1
-                    encoding_steps.append("unicode")
-                    updated = True
-                else:  # If Unicode decoding failed, try URI decoding
-                    try:
-                        decoded_uri_str = unquote(unicode_encoded)
-                        if decoded_uri_str != unicode_encoded:
-                            decoded_content = decoded_content.replace(unicode_match.group(0), decoded_uri_str)
-                            uri_counter += 1
-                            encoding_steps.append("uri")
-                            updated = True
-                    except Exception as e:
-                        print(f"Error decoding URI: {e}")
-        if "data:application/octet-stream;base64," in decoded_content:
-            gzip_match = re.search(r'data:application/octet-stream;base64,(.+)', decoded_content)
-            if gzip_match:
-                gzip_encoded = gzip_match.group(1)
-                decoded_str = decode_and_unzip_base64(gzip_encoded)
-                decoded_content = decoded_content.replace(gzip_match.group(0), decoded_str)
-                gzip_counter += 1
-                encoding_steps.append("gzip")
-                updated = True
+            else:
+                try:
+                    decoded_uri_str = unquote(encoded_str)
+                    if decoded_uri_str != encoded_str:
+                        decoded_content = decoded_content.replace(unicode_match.group(0), decoded_uri_str)
+                        counters["uri"] += 1
+                        encoding_steps.append("uri")
+                        updated = True
+                except Exception as e:
+                    print(f"Error decoding URI: {e}")
+
+        # Gzip decompressing
+        gzip_match = re.search(r'data:application/octet-stream;base64,(.+)', decoded_content)
+        if gzip_match:
+            decoded_str = decode_and_unzip_base64(gzip_match.group(1))
+            decoded_content = decoded_content.replace(gzip_match.group(0), decoded_str)
+            counters["gzip"] += 1
+            encoding_steps.append("gzip")
+            updated = True
+
         if not updated:
             break
 
-    print("Base64 decoding count:", base64_counter)
-    print("Unicode decoding count:", unicode_counter)
-    print("URI decoding count:", uri_counter)
-    print("Gzip decompressing count:", gzip_counter)
-    cyberchef_ops_json = create_cyberchef_ops_json(encoding_steps)
+    for key, value in counters.items():
+        print(f"{key.capitalize()} decoding count:", value)
+
     print("Decoding flow:", " -> ".join(encoding_steps) + " -> original")
 
     return decoded_content, encoding_steps
+
+def scan_for_mime_types(output_file):
+    mime = magic.Magic(mime=True)
+    with open(output_file, "rb") as f:
+        content = f.read()
+        mime_type = mime.from_buffer(content)
+        print(f"MIME Type: {mime_type}")
+        if "html" in mime_type:
+            # If the output file is an HTML page, check for embedded MIME types
+            embedded_mime_types = {}
+            start_index = 0
+            content_str = content.decode("utf-8")  # Decode the bytes object into a string
+            line_number = 1
+            col_number = 1
+            while True:
+                # Find the start and end indices of the next embedded MIME type
+                start_index = content_str.find("data:", start_index)
+                if start_index == -1:
+                    break
+                end_index = content_str.find(";", start_index)
+                # Extract the embedded MIME type and add it to the dictionary
+                embedded_mime_type = content_str[start_index+len("data:"):end_index].strip()
+
+                # Calculate line number and column number for the start_index
+                prev_newline_index = content_str.rfind("\n", 0, start_index)
+                if prev_newline_index == -1:
+                    line_number = 1
+                    col_number = start_index + 1
+                else:
+                    line_number = content_str.count("\n", 0, start_index) + 1
+                    col_number = start_index - prev_newline_index
+
+                location = (line_number, col_number)
+                if embedded_mime_type in embedded_mime_types:
+                    embedded_mime_types[embedded_mime_type].append(location)
+                else:
+                    embedded_mime_types[embedded_mime_type] = [location]
+                start_index = end_index
+            for embedded_mime_type, locations in embedded_mime_types.items():
+                print(f"Embedded MIME Type: {embedded_mime_type}")
+                print(f"Occurrences: {len(locations)}")
+                print(f"Locations: {', '.join(f'line {loc[0]}, col {loc[1]}' for loc in locations)}")
 
 def decode_main(args):
     script_content = extract_script_content(args.input_html_file)
     decoded_content, encoding_steps = decode_random_encoding(script_content)
     write_file(args.output_file, decoded_content, mode='w', encoding='utf-8')
-
+    scan_for_mime_types(args.output_file)
     if args.cyberchef:
         cyberchef_ops_json = create_cyberchef_ops_json(encoding_steps)
         cyberchef_output_file = args.output_file + "_cyberchef.json"
