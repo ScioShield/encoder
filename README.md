@@ -53,8 +53,6 @@ Included in this project are several webpages for testing purposes:
 
 # Improvements
 ## Encoder
-Currently, URI encoding, if done first, can break how the browser renders the document. For example, if it's original -> URI -> URI, that's fine, but if it's original -> URI -> Unicode, this breaks how the browser renders the first URI encoding. The current workaround is to have a chance of URI encoding as the final step.  
-Suspect the issue is the fact that unescape() will nestedly unescape encodings, however if it switches from Unicode to URI or vice versa, the browser based decoding breaks. Will test now. 
 
 ## Decoder 
 - Add a method to search for and decode `decodeURIComponent()` or `decodeURI()`
