@@ -148,23 +148,21 @@ def scan_for_mime_types(output_file):
         content = f.read()
         mime_type = mime.from_buffer(content)
         print(f"MIME Type: {mime_type}")
+        
         if "html" in mime_type:
             # If the output file is an HTML page, check for embedded MIME types
             embedded_mime_types = {}
             start_index = 0
-            content_str = content.decode("utf-8")  # Decode the bytes object into a string
-            line_number = 1
-            col_number = 1
-            while True:
-                # Find the start and end indices of the next embedded MIME type
-                start_index = content_str.find("data:", start_index)
-                if start_index == -1:
-                    break
-                end_index = content_str.find(";", start_index)
-                # Extract the embedded MIME type and add it to the dictionary
-                embedded_mime_type = content_str[start_index+len("data:"):end_index].strip()
+            content_str = content.decode("utf-8", errors='ignore')  # Decode the bytes object into a string
+            
+            # Find all occurrences of the pattern data:\s*[^;,]*; in the content
+            pattern = re.compile(r'data:\s*[^;,]*;')
+            locations = [(match.start(0), match.end(0)) for match in pattern.finditer(content_str)]
+            
+            # Extract the embedded MIME types and add them to the dictionary
+            for start_index, end_index in locations:
+                embedded_mime_type = content_str[start_index+len("data:"):end_index-1].strip()
 
-                # Calculate line number and column number for the start_index
                 prev_newline_index = content_str.rfind("\n", 0, start_index)
                 if prev_newline_index == -1:
                     line_number = 1
@@ -178,7 +176,8 @@ def scan_for_mime_types(output_file):
                     embedded_mime_types[embedded_mime_type].append(location)
                 else:
                     embedded_mime_types[embedded_mime_type] = [location]
-                start_index = end_index
+                    
+            # Print the embedded MIME types and their occurrences and locations
             for embedded_mime_type, locations in embedded_mime_types.items():
                 print(f"Embedded MIME Type: {embedded_mime_type}")
                 print(f"Occurrences: {len(locations)}")
