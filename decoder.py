@@ -163,12 +163,12 @@ def scan_for_mime_types(output_file):
             for start_index, end_index in locations:
                 embedded_mime_type = content_str[start_index+len("data:"):end_index-1].strip()
 
-                prev_newline_index = content_str.rfind("\n", 0, start_index)
+                prev_newline_index = content_str.rfind("", 0, start_index)
                 if prev_newline_index == -1:
                     line_number = 1
                     col_number = start_index + 1
                 else:
-                    line_number = content_str.count("\n", 0, start_index) + 1
+                    line_number = content_str.count("", 0, start_index) + 1
                     col_number = start_index - prev_newline_index
 
                 location = (line_number, col_number)
@@ -183,11 +183,41 @@ def scan_for_mime_types(output_file):
                 print(f"Occurrences: {len(locations)}")
                 print(f"Locations: {', '.join(f'line {loc[0]}, col {loc[1]}' for loc in locations)}")
 
+
+def scan_for_script_tags(output_file):
+    mime = magic.Magic(mime=True)
+    with open(output_file, "rb") as f:
+        content = f.read()
+        mime_type = mime.from_buffer(content)
+        
+        if "html" in mime_type:
+            content_str = content.decode("utf-8", errors='ignore')  # Decode the bytes object into a string
+            
+            # Find all occurrences of the pattern <script> in the content
+            pattern = re.compile(r'<script[^>]*>', re.IGNORECASE)
+            script_matches = pattern.finditer(content_str)
+
+            # Output the locations of the matching script tags
+            print("Locations of <script> tags:")
+            for match in script_matches:
+                start_index = match.start(0)
+
+                prev_newline_index = content_str.rfind("\n", 0, start_index)
+                if prev_newline_index == -1:
+                    line_number = 1
+                    col_number = start_index + 1
+                else:
+                    line_number = content_str.count("\n", 0, start_index) + 1
+                    col_number = start_index - prev_newline_index
+
+                print(f"line {line_number}, col {col_number}")
+
 def decode_main(args):
     script_content = extract_script_content(args.input_html_file)
     decoded_content, encoding_steps = decode_random_encoding(script_content)
     write_file(args.output_file, decoded_content, mode='w', encoding='utf-8')
     scan_for_mime_types(args.output_file)
+    scan_for_script_tags(args.output_file)
     if args.cyberchef:
         cyberchef_ops_json = create_cyberchef_ops_json(encoding_steps)
         cyberchef_output_file = args.output_file + "_cyberchef.json"
