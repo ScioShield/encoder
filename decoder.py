@@ -163,12 +163,12 @@ def scan_for_mime_types(output_file):
             for start_index, end_index in locations:
                 embedded_mime_type = content_str[start_index+len("data:"):end_index-1].strip()
 
-                prev_newline_index = content_str.rfind("", 0, start_index)
+                prev_newline_index = content_str.rfind("\n", 0, start_index)
                 if prev_newline_index == -1:
                     line_number = 1
                     col_number = start_index + 1
                 else:
-                    line_number = content_str.count("", 0, start_index) + 1
+                    line_number = content_str.count("\n", 0, start_index) + 1
                     col_number = start_index - prev_newline_index
 
                 location = (line_number, col_number)
