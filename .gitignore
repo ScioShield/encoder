@@ -1,2 +1,8 @@
-.vscode/*
 __pycache__/*
+.vscode/*
+.vagrant/*
+python-*.exe
+build/*
+dist/*
+decoder*.spec
+encoder*.spec
