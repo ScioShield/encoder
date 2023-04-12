@@ -1,21 +1,18 @@
 # Instructions  
 ## Dependencies
-To run the script, Python 3+ is required. Also, make sure to install the following Python libraries:  
+To run the script, Python 3+ is required. Also, make sure to install the following Python libraries (most are shipped by default):  
 
 - `argparse`
 - `base64`
 - `random`
 - `gzip`
 - `urllib`
+- `magic`
 
 You can install the required libraries using pip:  
 
 ```sh
-pip3 install argparse  
-pip3 install base64  
-pip3 install random  
-pip3 install gzip  
-pip3 install urllib  
+python3 -m pip install --user -r requirements.txt
 ```
 
 ## Encoder
