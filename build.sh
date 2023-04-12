@@ -42,7 +42,7 @@ fi
 
 # Build the app with appropriate version
 if [[ "$APP" == "encoder.py" ]]; then
-    vagrant winrm -e -s powershell -c "Invoke-Command -ScriptBlock { cd C:\vagrant\ ; pyinstaller --onefile --name encoder$VERSION.exe encoder.py }"
+    vagrant winrm -e -s powershell -c "Invoke-Command -ScriptBlock { cd C:\vagrant\ ; pyinstaller --onefile --name encoder$VERSION encoder.py }"
 else
     vagrant winrm -e -s powershell -c "Invoke-Command -ScriptBlock { cd C:\vagrant\ ; pip install python-magic-bin ; pyinstaller --onefile --name decoder$VERSION decoder.py }"
 fi
